@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AnnotateAI — Sign In</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/theme.css"/>
+<script src="/static/nav.js"></script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <style>
+    #google_translate_element { display:none; }
+    .goog-te-banner-frame { display:none !important; }
+    body { top: 0 !important; }
+    .goog-te-gadget { font-size:0 !important; }
+    .goog-te-gadget select { 
+      background: var(--bg2) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 8px !important;
+      padding: 4px 8px !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      outline: none !important;
+    }
+  </style>
+</head>
+<body class="mesh min-h-screen">
+
+  <div id="gt-hidden" style="display:none"></div>
+<header class="nav-bar glass" id="shared-nav"></header>
+<div id="google_translate_element" style="display:none"></div>
+
+<main style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 24px 24px">
+  <div style="width:100%;max-width:400px" class="fade-up d1">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="width:56px;height:56px;background:var(--accent);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px rgba(0,102,204,0.3)">
+        <span class="material-symbols-outlined" style="color:white;font-size:28px">bubble_chart</span>
+      </div>
+      <h1 style="font-size:28px;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px" id="form-title"><span data-i18n="signin-title">Sign in to AnnotateAI</span></h1>
+      <p style="font-size:14px;color:var(--text-muted)" id="form-sub"><span data-i18n="signin-sub">Access your image intelligence workspace.</span></p>
+    </div>
+
+    <div class="glass" style="border-radius:12px;padding:4px;display:flex;gap:4px;margin-bottom:24px">
+      <button onclick="switchTab('login')" id="tab-login" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;background:var(--bg2);color:var(--text);transition:all 0.2s;font-family:inherit" data-i18n="signin">Sign In</button>
+      <button onclick="switchTab('register')" id="tab-register" style="flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;background:transparent;color:var(--text-muted);transition:all 0.2s;font-family:inherit" data-i18n="register-title">Register</button>
+    </div>
+
+    <div id="status" style="display:none;margin-bottom:16px;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:500"></div>
+
+    <div class="glass" style="border-radius:24px;padding:32px;box-shadow:0 8px 40px rgba(0,0,0,0.08)">
+      <div style="margin-bottom:16px">
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);display:block;margin-bottom:8px" data-i18n="username">Username</label>
+        <input id="username" type="text" data-i18n="username" placeholder="your_username" style="width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--border);font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted)" data-i18n="password">Password</label>
+          <a href="#" id="forgot-link" style="font-size:11px;color:var(--accent)" data-i18n="forgot"><span data-i18n="forgot">Forgot password?</span></a>
+        </div>
+        <input id="password" type="password" placeholder="••••••••" style="width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--border);font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+      <div id="role-group" style="display:none;margin-bottom:16px">
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);display:block;margin-bottom:8px" data-i18n="role">Role</label>
+        <select id="role" style="width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--border);font-size:14px;font-family:inherit;outline:none">
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+          <option value="guest">Guest</option>
+        </select>
+      </div>
+      <button id="submit-btn" onclick="submitAuth()" class="btn-primary" style="width:100%;margin-top:8px">Sign In</button>
+      <div style="position:relative;margin:24px 0;display:flex;align-items:center">
+        <div style="flex:1;border-top:1px solid var(--border)"></div>
+        <span style="padding:0 12px;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em">or</span>
+        <div style="flex:1;border-top:1px solid var(--border)"></div>
+      </div>
+      <button onclick="continueAsGuest()" class="btn-ghost" style="width:100%" data-i18n="continue-guest">Continue as Guest</button>
+    </div>
+
+    <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:24px">
+      <span data-i18n="terms-agree">By continuing, you agree to our</span>
+      <a href="#" style="color:var(--accent)" data-i18n="terms">Terms</a> and
+      <a href="#" style="color:var(--accent)" data-i18n="privacy">Privacy Policy</a>.
+    </p>
+  </div>
+</main>
+
+<nav class="bottom-nav glass" id="shared-bottom-nav"></nav>
+
+<script>
+  const PAGE_STRINGS = {
+    en: { username:'Username', password:'Password', forgot:'Forgot password?', role:'Role', signin:'Sign In', guest:'Continue as Guest' },
+    it: { username:'Nome utente', password:'Password', forgot:'Password dimenticata?', role:'Ruolo', signin:'Accedi', guest:'Continua come ospite' }
+  };
+
+  function applyLang(lang) {
+    const t = PAGE_STRINGS[lang];
+    document.getElementById('form-title').textContent = lang==='it' ? 'Accedi ad AnnotateAI' : 'Sign in to AnnotateAI';
+    document.getElementById('form-sub').textContent = lang==='it' ? 'Accedi al tuo spazio di lavoro.' : 'Access your image intelligence workspace.';
+    document.getElementById('submit-btn').textContent = t.signin;
+  }
+
+  let mode = 'login';
+
+  function switchTab(tab) {
+    mode = tab;
+    const isLogin = tab === 'login';
+    document.getElementById('tab-login').style.background = isLogin ? 'var(--bg2)' : 'transparent';
+    document.getElementById('tab-login').style.color = isLogin ? 'var(--text)' : 'var(--text-muted)';
+    document.getElementById('tab-register').style.background = !isLogin ? 'var(--bg2)' : 'transparent';
+    document.getElementById('tab-register').style.color = !isLogin ? 'var(--text)' : 'var(--text-muted)';
+    document.getElementById('forgot-link').style.display = isLogin ? 'block' : 'none';
+    document.getElementById('role-group').style.display = isLogin ? 'none' : 'block';
+    document.getElementById('status').style.display = 'none';
+    applyLang(getLang());
+  }
+
+  function showStatus(msg, ok) {
+    const el = document.getElementById('status');
+    el.style.display = 'block';
+    el.style.background = ok ? 'rgba(52,199,89,0.1)' : 'rgba(255,59,48,0.1)';
+    el.style.color = ok ? '#34C759' : '#FF3B30';
+    el.style.border = `1px solid ${ok ? 'rgba(52,199,89,0.2)' : 'rgba(255,59,48,0.2)'}`;
+    el.textContent = msg;
+  }
+
+  async function submitAuth() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    if (!username || !password) { showStatus('Please fill in all fields.', false); return; }
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true; btn.textContent = '...';
+    const body = { username, password };
+    if (mode === 'register') body.role = document.getElementById('role').value;
+    try {
+      const res = await fetch(mode === 'login' ? '/login' : '/register', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', username);
+        localStorage.setItem('role', data.role || 'user');
+        window.location.href = '/home';
+      } else if (data.message) {
+        showStatus(data.message + ' — now sign in.', true);
+        switchTab('login');
+      } else {
+        showStatus(data.error || 'Something went wrong.', false);
+      }
+    } catch(e) { showStatus('Connection error.', false); }
+    finally {
+      btn.disabled = false;
+      btn.textContent = PAGE_STRINGS[getLang()].signin;
+    }
+  }
+
+  function continueAsGuest() {
+    localStorage.setItem('token', '');
+    localStorage.setItem('username', 'Guest');
+    localStorage.setItem('role', 'guest');
+    window.location.href = '/home';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') submitAuth(); });
+  document.addEventListener('DOMContentLoaded', () => applyLang(getLang()));
+</script>
+</body>
+</html>

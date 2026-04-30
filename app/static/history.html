@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AnnotateAI — History</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/theme.css"/>
+<script src="/static/nav.js"></script>
+  <!-- Google Translate -->
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <style>
+    .goog-te-banner-frame, .skiptranslate { display:none !important; }
+    body { top:0 !important; }
+    .goog-tooltip { display:none !important; }
+    .goog-tooltip:hover { display:none !important; }
+    .goog-text-highlight { background:none !important; box-shadow:none !important; }
+  </style>
+</head>
+<body style="background:var(--bg)">
+  <div id="gt-hidden" style="display:none"></div>
+<header class="nav-bar glass" id="shared-nav"></header>
+<main style="max-width:1080px;margin:0 auto;padding:80px 24px 40px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;flex-wrap:wrap;gap:16px">
+    <div>
+      <h1 style="font-size:32px;font-weight:700;letter-spacing:-0.02em;color:var(--text)">Detection History</h1>
+      <p style="font-size:15px;color:var(--text-muted);margin-top:6px">All your past detections</p>
+    </div>
+    <button onclick="exportData()" class="btn-ghost" style="font-size:13px;padding:10px 20px;display:flex;align-items:center;gap:6px">
+      <span class="material-symbols-outlined" style="font-size:16px">download</span> Export
+    </button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:28px" id="stats-grid"></div>
+  <div style="display:flex;gap:10px;margin-bottom:16px">
+    <div style="position:relative;flex:1">
+      <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--text-muted)">search</span>
+      <input id="search" type="text" placeholder="Search by label..." oninput="filterGallery()" style="width:100%;padding:11px 16px 11px 40px;border-radius:12px;font-size:14px;font-family:inherit;outline:none;border:1px solid var(--border)" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+    </div>
+  </div>
+  <div id="filter-chips" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px"></div>
+  <div id="gallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px"></div>
+</main>
+<nav class="bottom-nav glass" id="shared-bottom-nav"></nav>
+<script>
+const token = localStorage.getItem('token');
+let allImages = [];
+let activeFilter = null;
+
+async function loadHistory() {
+  if (!token) {
+    document.getElementById('gallery').innerHTML = '<p style="color:var(--text-muted);font-size:14px">Please sign in to see your history.</p>';
+    return;
+  }
+  try {
+    const res = await fetch('/images', {headers:{'Authorization':'Bearer '+token}});
+    const data = await res.json();
+    allImages = (data.images||[]).reverse();
+    renderStats(); renderChips(); renderGallery(allImages);
+  } catch(e) {
+    document.getElementById('gallery').innerHTML = '<p style="color:var(--text-muted)">Could not load history.</p>';
+  }
+}
+
+function renderStats() {
+  const labels = [...new Set(allImages.flatMap(i=>i.labels||[]))];
+  const last = allImages.length ? new Date(allImages[0].date).toLocaleDateString() : '—';
+  document.getElementById('stats-grid').innerHTML = [
+    ['database','Total',allImages.length],
+    ['label','Unique Labels',labels.length],
+    ['calendar_today','Last Detection',last],
+  ].map(([icon,label,val]) => `
+    <div class="glass" style="border-radius:16px;padding:20px">
+      <span class="material-symbols-outlined" style="font-size:20px;color:var(--accent);margin-bottom:8px;display:block">${icon}</span>
+      <div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px">${val}</div>
+      <div style="font-size:12px;color:var(--text-muted)">${label}</div>
+    </div>`).join('');
+}
+
+function renderChips() {
+  const labels = [...new Set(allImages.flatMap(i=>i.labels||[]))].slice(0,12);
+  document.getElementById('filter-chips').innerHTML = ['All',...labels].map(l => `
+    <button onclick="setFilter('${l}')" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid ${l===activeFilter||(!activeFilter&&l==='All')?'var(--accent)':'var(--border)'};background:${l===activeFilter||(!activeFilter&&l==='All')?'var(--accent)':'var(--surface)'};color:${l===activeFilter||(!activeFilter&&l==='All')?'white':'var(--text-muted)'};cursor:pointer">${l}</button>`).join('');
+}
+
+function setFilter(label) { activeFilter = label==='All'?null:label; renderChips(); filterGallery(); }
+
+function filterGallery() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = allImages.filter(img => {
+    const matchLabel = !activeFilter || (img.labels||[]).includes(activeFilter);
+    const matchSearch = !q || (img.labels||[]).some(l=>l.toLowerCase().includes(q));
+    return matchLabel && matchSearch;
+  });
+  renderGallery(filtered);
+}
+
+function renderGallery(images) {
+  if (!images.length) { document.getElementById('gallery').innerHTML = '<p style="color:var(--text-muted);font-size:14px">No detections found.</p>'; return; }
+  document.getElementById('gallery').innerHTML = images.map(img => `
+    <div class="glass card-hover" style="border-radius:16px;overflow:hidden;cursor:pointer" onclick="openDetect('${img.image_url}')">
+      <div style="aspect-ratio:4/3;background:var(--bg2);position:relative;overflow:hidden">
+        <img src="${img.image_url}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>
+        <div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;color:white">${(img.labels||[]).length} objects</div>
+      </div>
+      <div style="padding:14px">
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+          ${(img.labels||[]).slice(0,3).map(l=>`<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;background:rgba(0,102,204,0.1);color:var(--accent)">${l}</span>`).join('')}
+          ${(img.labels||[]).length>3?`<span style="font-size:11px;color:var(--text-muted);padding:3px 6px">+${img.labels.length-3}</span>`:''}
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:11px;color:var(--text-muted)">${new Date(img.date).toLocaleDateString()}</span>
+          <button onclick="event.stopPropagation();window.open('${img.image_url}','_blank')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px">
+            <span class="material-symbols-outlined" style="font-size:16px">download</span>
+          </button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openDetect(url) { localStorage.setItem('detect_url',url); window.location.href='/detect-page'; }
+function exportData() {
+  const blob = new Blob([JSON.stringify(allImages,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='history.json'; a.click();
+}
+
+loadHistory();
+</script>
+</body>
+</html>

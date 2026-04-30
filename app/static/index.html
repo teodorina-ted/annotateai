@@ -1,0 +1,110 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Image Gallery</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #fff; }
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+    h1 { font-size: 2rem; margin-bottom: 8px; }
+    p.sub { color: #888; margin-bottom: 32px; }
+    .card { background: #1a1a1a; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; margin-bottom: 12px; font-size: 14px; }
+    button { padding: 10px 24px; border-radius: 8px; border: none; background: #4f46e5; color: #fff; font-size: 14px; cursor: pointer; }
+    button:hover { background: #4338ca; }
+    .tag { display: inline-block; background: #4f46e5; border-radius: 20px; padding: 4px 12px; font-size: 12px; margin: 4px; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .gallery-item { background: #1a1a1a; border-radius: 12px; padding: 12px; }
+    .gallery-item img { width: 100%; border-radius: 8px; margin-bottom: 8px; }
+    .status { padding: 10px; border-radius: 8px; background: #1e3a2f; color: #4ade80; margin-bottom: 12px; display: none; }
+    #result-img { width: 100%; border-radius: 8px; margin-bottom: 12px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 AI Image Gallery</h1>
+    <p class="sub">Upload an image URL and let YOLO detect objects</p>
+
+    <div class="card" id="auth-card">
+      <h2 style="margin-bottom:16px">Login</h2>
+      <div id="status" class="status"></div>
+      <input id="username" placeholder="Username" />
+      <input id="password" placeholder="Password" type="password" />
+      <button id="loginBtn">Login</button>
+      <button id="registerBtn" style="background:#333; margin-left:8px">Register</button>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:16px">Detect Objects</h2>
+      <input id="image_url" placeholder="Paste image URL here..." />
+      <button id="detectBtn">Detect</button>
+      <br><br>
+      <img id="result-img" src="" alt="result"/>
+      <div id="labels"></div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:16px">My History</h2>
+      <button id="historyBtn" style="margin-bottom:16px">Load History</button>
+      <div class="gallery" id="gallery"></div>
+    </div>
+  </div>
+
+  <script>
+    let token = "";
+
+    function showStatus(msg, ok=true) {
+      const s = document.getElementById("status");
+      s.style.display = "block";
+      s.style.background = ok ? "#1e3a2f" : "#3a1e1e";
+      s.style.color = ok ? "#4ade80" : "#f87171";
+      s.innerText = msg;
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          username: document.getElementById("username").value,
+          password: document.getElementById("password").value
+        })
+      });
+      const data = await res.json();
+      if (data.token) {
+        token = data.token;
+        showStatus("✅ Logged in as " + document.getElementById("username").value);
+      } else {
+        showStatus("❌ " + data.error, false);
+      }
+    });
+
+    document.getElementById("registerBtn").addEventListener("click", async () => {
+      const res = await fetch("/register", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          username: document.getElementById("username").value,
+          password: document.getElementById("password").value
+        })
+      });
+      const data = await res.json();
+      showStatus(data.message || data.error, **Terminal 2:**data.message);
+    });
+
+    document.getElementById("detectBtn").addEventListener("click", async () => {
+      const url = document.getElementById("image_url").value;
+      const headers = {"Content-Type": "application/json"};
+      if (token) headers["Authorization"] = "Bearer " + token;
+
+      const res = await fetch("/detect", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({image_url: url})
+      });
+      const data = await res.json();
+
+      document.getElementById("result-img").src = url;
+      document.getElementById("result-img").style.display = "block";
+      document.getElementById("labels").innerHTML = data.labels
+        .map(l => 

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AnnotateAI — Import</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/theme.css"/>
+<script src="/static/nav.js"></script>
+  <!-- Google Translate -->
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <style>
+    .goog-te-banner-frame, .skiptranslate { display:none !important; }
+    body { top:0 !important; }
+    .goog-tooltip { display:none !important; }
+    .goog-tooltip:hover { display:none !important; }
+    .goog-text-highlight { background:none !important; box-shadow:none !important; }
+  </style>
+</head>
+<body style="background:var(--bg)">
+  <div id="gt-hidden" style="display:none"></div>
+<header class="nav-bar glass" id="shared-nav"></header>
+<main style="max-width:600px;margin:0 auto;padding:80px 24px 40px">
+  <div style="margin-bottom:32px">
+    <h1 style="font-size:32px;font-weight:700;letter-spacing:-0.02em;color:var(--text)" data-i18n="import-title">Import from URL</h1>
+    <p style="font-size:15px;color:var(--text-muted);margin-top:6px" data-i18n="import-sub">Paste any image URL and run AI detection instantly</p>
+  </div>
+  <div class="glass" style="border-radius:20px;padding:28px;margin-bottom:20px">
+    <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);display:block;margin-bottom:10px" data-i18n="image-url">Image URL</label>
+    <input id="url-input" type="url" data-i18n="url-placeholder" placeholder="https://example.com/image.jpg"
+      style="width:100%;padding:12px 16px;border-radius:12px;font-size:14px;font-family:inherit;outline:none;border:1px solid var(--border);margin-bottom:16px;transition:border-color 0.2s"
+      onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+      onkeydown="if(event.key==='Enter') importUrl()"/>
+    <button onclick="importUrl()" class="btn-primary" style="width:100%;padding:13px;font-size:14px" data-i18n="detect-btn">Detect</button>
+  </div>
+  <div id="import-status" style="display:none;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:500;margin-bottom:16px"></div>
+  <div class="glass" style="border-radius:20px;padding:20px">
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Examples</p>
+    ${['https://ultralytics.com/images/bus.jpg','https://ultralytics.com/images/zidane.jpg'].map(url =>
+      `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="document.getElementById('url-input').value='${url}'">
+        <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent)">link</span>
+        <span style="font-size:12px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</span>
+      </div>`).join('')}
+  </div>
+</main>
+<nav class="bottom-nav glass" id="shared-bottom-nav"></nav>
+<script>
+function importUrl() {
+  const url = document.getElementById('url-input').value.trim();
+  if (!url) return;
+  localStorage.setItem('detect_url', url);
+  window.location.href = '/detect-page';
+}
+</script>
+</body>
+</html>

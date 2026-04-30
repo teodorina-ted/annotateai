@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AnnotateAI — Home</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/theme.css"/>
+<script src="/static/nav.js"></script>
+  <!-- Google Translate -->
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <style>
+    .goog-te-banner-frame, .skiptranslate { display:none !important; }
+    body { top:0 !important; }
+    .goog-tooltip { display:none !important; }
+    .goog-tooltip:hover { display:none !important; }
+    .goog-text-highlight { background:none !important; box-shadow:none !important; }
+  </style>
+</head>
+<body style="background:var(--bg)">
+
+  <div id="gt-hidden" style="display:none"></div>
+<header class="nav-bar glass" id="shared-nav"></header>
+
+<main style="max-width:800px;margin:0 auto;padding:80px 24px 40px">
+
+  <!-- Greeting -->
+  <div class="fade-up d1" style="margin-bottom:40px">
+    <p style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px" data-i18n="welcome">Welcome back</p>
+    <h1 style="font-size:36px;font-weight:700;letter-spacing:-0.02em;color:var(--text)" id="greeting">Hello</h1>
+    <p style="font-size:15px;color:var(--text-muted);margin-top:6px" data-i18n="today">What would you like to do today?</p>
+  </div>
+
+  <!-- 2 Action Cards -->
+  <div class="fade-up d2" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px">
+
+    <!-- Upload Card with options -->
+    <div class="glass" style="border-radius:20px;padding:28px">
+      <div style="width:52px;height:52px;background:var(--accent);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 8px 24px rgba(0,102,204,0.3)">
+        <span class="material-symbols-outlined" style="color:white;font-size:24px">upload_file</span>
+      </div>
+      <h3 style="font-size:17px;font-weight:600;color:var(--text);margin-bottom:8px" data-i18n="upload-image">Upload Image</h3>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:20px" data-i18n="upload-desc">Select one or multiple images and run AI detection.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button onclick="document.getElementById('file-single').click()" class="btn-primary" style="font-size:13px;padding:10px 16px;display:flex;align-items:center;gap:6px;justify-content:center">
+          <span class="material-symbols-outlined" style="font-size:16px">image</span>
+          <span data-i18n="single-image">Single Image</span>
+        </button>
+        <button onclick="document.getElementById('file-bulk').click()" class="btn-ghost" style="font-size:13px;padding:10px 16px;display:flex;align-items:center;gap:6px;justify-content:center">
+          <span class="material-symbols-outlined" style="font-size:16px">folder_open</span>
+          <span data-i18n="bulk-upload">Bulk Upload</span>
+        </button>
+      </div>
+      <input type="file" id="file-single" accept="image/*" style="display:none" onchange="handleSingle(event)"/>
+      <input type="file" id="file-bulk" accept="image/*" multiple style="display:none" onchange="handleBulk(event)"/>
+    </div>
+
+    <!-- Camera Card -->
+    <div class="glass card-hover" style="border-radius:20px;padding:28px;cursor:pointer" onclick="openCamera()">
+      <div style="width:52px;height:52px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+        <span class="material-symbols-outlined" style="color:var(--text);font-size:24px">photo_camera</span>
+      </div>
+      <h3 style="font-size:17px;font-weight:600;color:var(--text);margin-bottom:8px" data-i18n="take-photo">Take Photo</h3>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.5" data-i18n="photo-desc">Use your device camera to capture and analyze an image in real time.</p>
+    </div>
+
+  </div>
+
+  <!-- Recent -->
+  <div class="fade-up d4">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <p style="font-size:14px;font-weight:600;color:var(--text)" data-i18n="recent">Recent Detections</p>
+      <a href="/history-page" style="font-size:13px;color:var(--accent);text-decoration:none" data-i18n="view-all">View all →</a>
+    </div>
+    <div id="recent-list"></div>
+  </div>
+
+</main>
+
+<!-- Camera Modal -->
+<div id="camera-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center">
+  <div class="glass" style="border-radius:24px;padding:24px;width:90%;max-width:480px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="font-size:16px;font-weight:600;color:var(--text)" data-i18n="take-photo">Take Photo</h3>
+      <button onclick="closeCamera()" style="background:none;border:none;cursor:pointer;color:var(--text-muted)">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <video id="camera-feed" style="width:100%;border-radius:16px;background:#000" autoplay playsinline></video>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="capturePhoto()" class="btn-primary" style="flex:1;padding:12px" data-i18n="capture">Capture</button>
+      <button onclick="closeCamera()" class="btn-ghost" style="flex:1;padding:12px" data-i18n="cancel">Cancel</button>
+    </div>
+    <canvas id="camera-canvas" style="display:none"></canvas>
+  </div>
+</div>
+
+<!-- Bulk Progress Modal -->
+<div id="bulk-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center">
+  <div class="glass" style="border-radius:24px;padding:32px;width:90%;max-width:480px">
+    <h3 style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:20px">Processing Images...</h3>
+    <div id="bulk-progress"></div>
+    <div id="bulk-done" style="display:none;margin-top:16px">
+      <p style="font-size:13px;color:#34C759;margin-bottom:16px">✅ All images processed!</p>
+      <button onclick="document.getElementById('bulk-modal').style.display='none';window.location.href='/history-page'" class="btn-primary" style="width:100%;padding:12px">View in History</button>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav glass" id="shared-bottom-nav"></nav>
+
+<script>
+const token = localStorage.getItem('token');
+const username = localStorage.getItem('username') || 'Guest';
+document.getElementById('greeting').textContent = 'Hello, ' + username;
+
+function handleSingle(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  localStorage.setItem('detect_url', URL.createObjectURL(file));
+  window.location.href = '/detect-page';
+}
+
+async function handleBulk(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  document.getElementById('bulk-modal').style.display = 'flex';
+  document.getElementById('bulk-progress').innerHTML = files.map((f,i) =>
+    `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span class="material-symbols-outlined" style="font-size:16px;color:var(--accent)">image</span>
+      <span style="flex:1;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>
+      <span id="bp-${i}" style="font-size:12px;color:var(--text-muted)">Pending</span>
+    </div>`).join('');
+
+  for (let i = 0; i < files.length; i++) {
+    document.getElementById('bp-'+i).textContent = '⏳';
+    const url = URL.createObjectURL(files[i]);
+    const headers = {'Content-Type':'application/json'};
+    if (token) headers['Authorization'] = 'Bearer '+token;
+    try {
+      const res = await fetch('/detect',{method:'POST',headers,body:JSON.stringify({image_url:url})});
+      const data = await res.json();
+      document.getElementById('bp-'+i).innerHTML = '<span style="color:#34C759">✓ '+(data.labels||[]).slice(0,2).join(', ')+'</span>';
+    } catch {
+      document.getElementById('bp-'+i).innerHTML = '<span style="color:#FF3B30">✗ Failed</span>';
+    }
+  }
+  document.getElementById('bulk-done').style.display = 'block';
+}
+
+function detectFromUrl() {
+  const url = document.getElementById('url-input').value.trim();
+  if (!url) return;
+  localStorage.setItem('detect_url', url);
+  window.location.href = '/detect-page';
+}
+
+async function loadRecent() {
+  const el = document.getElementById('recent-list');
+  if (!token) {
+    el.innerHTML = '<div class="glass" style="border-radius:14px;padding:20px;text-align:center;font-size:13px;color:var(--text-muted)">Sign in to see your history.</div>';
+    return;
+  }
+  try {
+    const res = await fetch('/images',{headers:{'Authorization':'Bearer '+token}});
+    const data = await res.json();
+    const images = (data.images||[]).reverse().slice(0,3);
+    if (!images.length) {
+      el.innerHTML = '<div class="glass" style="border-radius:14px;padding:20px;text-align:center;font-size:13px;color:var(--text-muted)">No detections yet. Upload your first image!</div>';
+      return;
+    }
+    el.innerHTML = images.map(img => `
+      <div class="glass" style="border-radius:14px;padding:14px;display:flex;align-items:center;gap:14px;margin-bottom:10px;cursor:pointer" onclick="openDetect('${img.image_url}')">
+        <img src="${img.image_url}" style="width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--bg2)" onerror="this.style.display='none'"/>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">
+            ${(img.labels||[]).slice(0,3).map(l=>`<span style="padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;background:rgba(0,102,204,0.1);color:var(--accent)">${l}</span>`).join('')}
+          </div>
+          <p style="font-size:11px;color:var(--text-muted)">${new Date(img.date).toLocaleDateString()}</p>
+        </div>
+        <span class="material-symbols-outlined" style="font-size:18px;color:var(--text-muted)">chevron_right</span>
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML = '<div class="glass" style="border-radius:14px;padding:20px;text-align:center;font-size:13px;color:var(--text-muted)">Could not load history.</div>';
+  }
+}
+
+function openDetect(url) { localStorage.setItem('detect_url',url); window.location.href='/detect-page'; }
+
+let stream = null;
+async function openCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    document.getElementById('camera-feed').srcObject = stream;
+    document.getElementById('camera-modal').style.display = 'flex';
+  } catch(e) { alert('Camera not available: ' + e.message); }
+}
+function closeCamera() {
+  if (stream) stream.getTracks().forEach(t=>t.stop());
+  document.getElementById('camera-modal').style.display = 'none';
+}
+function capturePhoto() {
+  const video = document.getElementById('camera-feed');
+  const canvas = document.getElementById('camera-canvas');
+  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  localStorage.setItem('detect_url', canvas.toDataURL('image/jpeg'));
+  closeCamera();
+  window.location.href = '/detect-page';
+}
+
+loadRecent();
+</script>
+</body>
+</html>

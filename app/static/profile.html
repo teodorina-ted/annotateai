@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AnnotateAI — Profile</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/theme.css"/>
+<script src="/static/nav.js"></script>
+  <!-- Google Translate -->
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <style>
+    .goog-te-banner-frame, .skiptranslate { display:none !important; }
+    body { top:0 !important; }
+    .goog-tooltip { display:none !important; }
+    .goog-tooltip:hover { display:none !important; }
+    .goog-text-highlight { background:none !important; box-shadow:none !important; }
+  </style>
+</head>
+<body style="background:var(--bg)">
+  <div id="gt-hidden" style="display:none"></div>
+<header class="nav-bar glass" id="shared-nav"></header>
+
+<main style="max-width:600px;margin:0 auto;padding:80px 24px 40px">
+
+  <!-- Avatar + name -->
+  <div style="text-align:center;margin-bottom:40px">
+    <div style="width:80px;height:80px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px;font-weight:700;color:white" id="avatar-initials">?</div>
+    <h1 style="font-size:24px;font-weight:700;color:var(--text)" id="profile-name">—</h1>
+    <p style="font-size:13px;color:var(--text-muted);margin-top:4px" id="profile-role">—</p>
+  </div>
+
+  <!-- Stats -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:32px" id="profile-stats"></div>
+
+  <!-- Settings -->
+  <div class="glass" style="border-radius:20px;overflow:hidden;margin-bottom:16px">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted)">Appearance</p>
+    </div>
+    <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="material-symbols-outlined" style="color:var(--accent)">dark_mode</span>
+        <span style="font-size:14px;color:var(--text)">Dark Mode</span>
+      </div>
+      <div onclick="toggleTheme()" style="width:44px;height:24px;border-radius:12px;background:var(--accent);cursor:pointer;position:relative;transition:background 0.2s" id="theme-toggle-switch">
+        <div style="width:18px;height:18px;border-radius:50%;background:white;position:absolute;top:3px;right:3px;transition:transform 0.2s" id="toggle-knob"></div>
+      </div>
+    </div>
+    <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="material-symbols-outlined" style="color:var(--accent)">language</span>
+        <span style="font-size:14px;color:var(--text)">Language</span>
+      </div>
+      <span style="font-size:13px;color:var(--text-muted)" id="current-lang">EN</span>
+    </div>
+  </div>
+
+  <div class="glass" style="border-radius:20px;overflow:hidden;margin-bottom:16px">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted)">Account</p>
+    </div>
+    <a href="/history-page" style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;text-decoration:none;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="material-symbols-outlined" style="color:var(--accent)">database</span>
+        <span style="font-size:14px;color:var(--text)">My History</span>
+      </div>
+      <span class="material-symbols-outlined" style="font-size:18px;color:var(--text-muted)">chevron_right</span>
+    </a>
+    <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="material-symbols-outlined" style="color:var(--accent)">shield</span>
+        <span style="font-size:14px;color:var(--text)">Privacy Center</span>
+      </div>
+      <span class="material-symbols-outlined" style="font-size:18px;color:var(--text-muted)">chevron_right</span>
+    </div>
+    <a href="#" style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;text-decoration:none">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="material-symbols-outlined" style="color:var(--accent)">help</span>
+        <span style="font-size:14px;color:var(--text)">Help Center</span>
+      </div>
+      <span class="material-symbols-outlined" style="font-size:18px;color:var(--text-muted)">chevron_right</span>
+    </a>
+  </div>
+
+  <button onclick="logout()" style="width:100%;padding:14px;border-radius:16px;border:none;background:rgba(255,59,48,0.1);color:#FF3B30;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">
+    <span class="material-symbols-outlined" style="font-size:18px">logout</span> Sign Out
+  </button>
+
+</main>
+
+<nav class="bottom-nav glass" id="shared-bottom-nav"></nav>
+
+<script>
+const username = localStorage.getItem('username') || 'Guest';
+const role = localStorage.getItem('role') || 'guest';
+const token = localStorage.getItem('token');
+
+document.getElementById('profile-name').textContent = username;
+document.getElementById('profile-role').textContent = role.charAt(0).toUpperCase() + role.slice(1) + ' Account';
+document.getElementById('avatar-initials').textContent = username.substring(0,2).toUpperCase();
+document.getElementById('current-lang').textContent = (localStorage.getItem('lang')||'en').toUpperCase();
+
+async function loadStats() {
+  if (!token) return;
+  try {
+    const res = await fetch('/images', {headers:{'Authorization':'Bearer '+token}});
+    const data = await res.json();
+    const images = data.images || [];
+    const labels = [...new Set(images.flatMap(i=>i.labels||[]))];
+    document.getElementById('profile-stats').innerHTML = [
+      ['database', images.length, 'Total Detections'],
+      ['label', labels.length, 'Unique Labels'],
+    ].map(([icon,val,label]) => `
+      <div class="glass" style="border-radius:16px;padding:20px;text-align:center">
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:22px;display:block;margin-bottom:8px">${icon}</span>
+        <div style="font-size:28px;font-weight:700;color:var(--text);margin-bottom:4px">${val}</div>
+        <div style="font-size:12px;color:var(--text-muted)">${label}</div>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+loadStats();
+</script>
+</body>
+</html>

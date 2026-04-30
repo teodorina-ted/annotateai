@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AnnotateAI — Image Intelligence</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/theme.css"/>
+<script src="/static/nav.js"></script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <style>
+    #google_translate_element { display:none; }
+    .goog-te-banner-frame { display:none !important; }
+    body { top: 0 !important; }
+    .goog-te-gadget { font-size:0 !important; }
+    .goog-te-gadget select { 
+      background: var(--bg2) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 8px !important;
+      padding: 4px 8px !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      outline: none !important;
+    }
+  </style>
+</head>
+<body style="background:var(--bg)">
+
+  <div id="gt-hidden" style="display:none"></div>
+<header class="nav-bar glass" id="shared-nav"></header>
+<div id="google_translate_element" style="display:none"></div>
+
+<!-- HERO -->
+<section style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 24px 60px;text-align:center;background:radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0,102,204,0.08) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 110%, rgba(0,102,204,0.05) 0%, transparent 60%), var(--bg)">
+
+  <div class="fade-up d1" style="margin-bottom:24px">
+    <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:100px;background:rgba(0,102,204,0.08);border:1px solid rgba(0,102,204,0.15)">
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite"></div>
+      <span style="font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em"><span data-i18n="powered-by">Powered by YOLO AI</span></span>
+    </div>
+  </div>
+
+  <h1 class="fade-up d2" data-i18n="hero-title" style="font-size:clamp(40px,8vw,80px);font-weight:800;letter-spacing:-0.025em;line-height:1.05;margin-bottom:24px;color:var(--text)">Your images,<br/><span style="color:var(--accent)">intelligently</span> labeled.</h1>
+
+  <p class="fade-up d3" data-i18n="hero-sub" style="font-size:19px;color:var(--text-muted);max-width:520px;margin-bottom:40px;line-height:1.6;font-weight:300">Upload any photo. Let AI detect and classify every object — then review, annotate, and build your dataset in seconds.</p>
+
+  <div class="fade-up d4" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:72px">
+    <a href="/auth" class="btn-primary" style="text-decoration:none;font-size:15px;padding:14px 32px" data-i18n="start-free">Start for free</a>
+    <a href="#how" class="btn-ghost" style="text-decoration:none;font-size:15px;padding:14px 32px" data-i18n="see-how">See how it works</a>
+  </div>
+
+  <!-- HERO CARD -->
+  <div class="fade-up d4 glass" style="width:100%;max-width:900px;border-radius:24px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.12)">
+    <div style="background:#1D1D1F;aspect-ratio:16/7;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(0,102,204,0.12),transparent)"></div>
+      <div style="position:absolute;top:22%;left:14%;width:30%;height:52%;border:1.5px solid rgba(0,102,204,0.6);border-radius:10px">
+        <div style="position:absolute;top:-20px;left:0;background:rgba(0,102,204,0.9);backdrop-filter:blur(8px);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px">Vehicle · 97.2%</div>
+      </div>
+      <div style="position:absolute;top:33%;right:22%;width:13%;height:32%;border:1.5px solid rgba(52,199,89,0.6);border-radius:10px">
+        <div style="position:absolute;top:-20px;left:0;background:rgba(52,199,89,0.9);backdrop-filter:blur(8px);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px">Person · 94%</div>
+      </div>
+      <div style="position:absolute;bottom:20px;left:20px;display:flex;gap:8px;flex-wrap:wrap">
+        <span style="background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.12);color:white;font-size:11px;font-weight:500;padding:6px 12px;border-radius:100px">Car</span>
+        <span style="background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.12);color:white;font-size:11px;font-weight:500;padding:6px 12px;border-radius:100px">Person</span>
+        <span style="background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.12);color:white;font-size:11px;font-weight:500;padding:6px 12px;border-radius:100px">Traffic Light</span>
+        <span style="background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.12);color:white;font-size:11px;font-weight:500;padding:6px 12px;border-radius:100px">Stop Sign</span>
+      </div>
+      <div style="position:absolute;top:16px;right:16px;background:rgba(0,102,204,0.15);backdrop-filter:blur(12px);border:1px solid rgba(0,102,204,0.25);padding:6px 14px;border-radius:100px">
+        <span style="color:var(--accent);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em"><span data-i18n="ai-analyzing">AI Analyzing</span></span>
+      </div>
+      <p style="color:rgba(255,255,255,0.04);font-size:96px;font-weight:900;user-select:none;letter-spacing:-0.04em">AI</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="padding:96px 24px;background:var(--bg2)">
+  <div style="max-width:1080px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:64px">
+      <h2 style="font-size:40px;font-weight:700;letter-spacing:-0.02em;margin-bottom:12px;color:var(--text)" data-i18n="how-title">How it works</h2>
+      <p style="font-size:17px;color:var(--text-muted);font-weight:300" data-i18n="how-sub">Three steps to intelligent image data</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
+      <div class="glass card-hover" style="border-radius:24px;padding:32px">
+        <div style="width:48px;height:48px;background:rgba(0,102,204,0.1);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:24px">
+          <span class="material-symbols-outlined" style="color:var(--accent)">add_a_photo</span>
+        </div>
+        <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px" data-i18n="step1-num">Step 01</p>
+        <h3 style="font-size:20px;font-weight:600;letter-spacing:-0.01em;margin-bottom:12px;color:var(--text)" data-i18n="step1-title">Upload or Capture</h3>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.6" data-i18n="step1-desc">Take a photo or drag and drop any image. Supports bulk uploads for entire datasets at once.</p>
+      </div>
+      <div class="glass card-hover" style="border-radius:24px;padding:32px">
+        <div style="width:48px;height:48px;background:rgba(0,102,204,0.1);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:24px">
+          <span class="material-symbols-outlined" style="color:var(--accent)">psychology</span>
+        </div>
+        <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px" data-i18n="step2-num">Step 02</p>
+        <h3 style="font-size:20px;font-weight:600;letter-spacing:-0.01em;margin-bottom:12px;color:var(--text)" data-i18n="step2-title">AI Detects</h3>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.6" data-i18n="step2-desc">YOLO neural network scans your image and identifies every object with confidence scores.</p>
+      </div>
+      <div class="glass card-hover" style="border-radius:24px;padding:32px">
+        <div style="width:48px;height:48px;background:rgba(0,102,204,0.1);border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:24px">
+          <span class="material-symbols-outlined" style="color:var(--accent)">verified</span>
+        </div>
+        <p style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px" data-i18n="step3-num">Step 03</p>
+        <h3 style="font-size:20px;font-weight:600;letter-spacing:-0.01em;margin-bottom:12px;color:var(--text)" data-i18n="step3-title">Review and Approve</h3>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.6" data-i18n="step3-desc">Approve, edit, or correct labels. Your feedback continuously improves detection accuracy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="padding:96px 24px;background:var(--bg)">
+  <div style="max-width:1080px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:64px">
+      <h2 style="font-size:40px;font-weight:700;letter-spacing:-0.02em;margin-bottom:12px;color:var(--text)" data-i18n="feat-title">Everything you need</h2>
+      <p style="font-size:17px;color:var(--text-muted);font-weight:300" data-i18n="feat-sub">Built for speed, precision, and scale</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+      <div class="glass card-hover" style="border-radius:20px;padding:24px">
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:22px;margin-bottom:16px;display:block">upload_file</span>
+        <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)" data-i18n="f1-title">Bulk Upload</h4>
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6" data-i18n="f1-desc">Process hundreds of images at once with automatic AI labeling.</p>
+      </div>
+      <div class="glass card-hover" style="border-radius:20px;padding:24px">
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:22px;margin-bottom:16px;display:block">edit_note</span>
+        <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)" data-i18n="f2-title">Annotation Editor</h4>
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6" data-i18n="f2-desc">Correct wrong labels and report inaccuracies with one tap.</p>
+      </div>
+      <div class="glass card-hover" style="border-radius:20px;padding:24px">
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:22px;margin-bottom:16px;display:block">image_search</span>
+        <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)" data-i18n="f3-title">Similar Images</h4>
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6" data-i18n="f3-desc">Semantic search finds visually similar images instantly.</p>
+      </div>
+      <div class="glass card-hover" style="border-radius:20px;padding:24px">
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:22px;margin-bottom:16px;display:block">manage_search</span>
+        <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)" data-i18n="f4-title">Search and Filter</h4>
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6" data-i18n="f4-desc">Find any image by label, date, or confidence score.</p>
+      </div>
+      <div class="glass card-hover" style="border-radius:20px;padding:24px">
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:22px;margin-bottom:16px;display:block">download</span>
+        <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)" data-i18n="f5-title">Export and Download</h4>
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6" data-i18n="f5-desc">Download labeled images or export your full dataset.</p>
+      </div>
+      <div class="glass card-hover" style="border-radius:20px;padding:24px">
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:22px;margin-bottom:16px;display:block">lock</span>
+        <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)" data-i18n="f6-title">Secure by Default</h4>
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6" data-i18n="f6-desc">JWT authentication and role-based access control.</p>
+      </div>
+      <div class="glass card-hover" style="border-radius:20px;padding:24px">
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:22px;margin-bottom:16px;display:block">database</span>
+        <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)" data-i18n="f7-title">Detection History</h4>
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6" data-i18n="f7-desc">Every detection saved to your personal history. Search, filter, and revisit anytime.</p>
+      </div>
+      <div class="glass card-hover" style="border-radius:20px;padding:24px">
+        <span class="material-symbols-outlined" style="color:var(--accent);font-size:22px;margin-bottom:16px;display:block">smart_toy</span>
+        <h4 style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--text)" data-i18n="f8-title">YOLO AI Engine</h4>
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6" data-i18n="f8-desc">State-of-the-art object detection. Identifies people, vehicles, animals and more in milliseconds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="padding:96px 24px;background:var(--bg2)">
+  <div style="max-width:440px;margin:0 auto;text-align:center">
+    <h2 style="font-size:40px;font-weight:700;letter-spacing:-0.02em;margin-bottom:12px;color:var(--text)" data-i18n="contact-title">Get in touch</h2>
+    <p style="font-size:17px;color:var(--text-muted);font-weight:300;margin-bottom:48px" data-i18n="contact-sub">Want to learn more or request early access?</p>
+    <div class="glass" style="border-radius:24px;padding:32px;text-align:left">
+      <div style="margin-bottom:20px">
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);display:block;margin-bottom:8px" data-i18n="name-label">Name</label>
+        <input type="text" data-i18n="name-placeholder" placeholder="Your name" style="width:100%;padding:12px 16px;border-radius:12px;font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);display:block;margin-bottom:8px" data-i18n="email-label">Email</label>
+        <input type="email" placeholder="name@company.com" style="width:100%;padding:12px 16px;border-radius:12px;font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+      <div style="margin-bottom:24px">
+        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);display:block;margin-bottom:8px" data-i18n="msg-label">Message</label>
+        <textarea rows="3" data-i18n="msg-placeholder" placeholder="Tell us about your use case..." style="width:100%;padding:12px 16px;border-radius:12px;font-size:14px;font-family:inherit;outline:none;resize:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      </div>
+      <button class="btn-primary" style="width:100%" data-i18n="send">Send Message</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--bg);border-top:1px solid var(--border);padding:56px 32px 32px">
+  <div style="max-width:1080px;margin:0 auto">
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:48px;margin-bottom:40px">
+
+      <!-- Brand -->
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span class="material-symbols-outlined" style="color:var(--accent);font-size:18px">bubble_chart</span>
+          <span style="font-weight:600;font-size:15px;color:var(--text)">AnnotateAI</span>
+        </div>
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6;max-width:220px;margin-bottom:20px">
+        <p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:12px" data-i18n="brand-desc">AI-powered image annotation project.</p>
+        </p>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:3px" data-i18n="course">Course: DevOPS · ITS Olivetti</p>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:3px" data-i18n="student">Student: Teodorina Lungu</p>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px" data-i18n="professor">Professor: Stefano Castagnoli</p>
+        <!-- Social icons -->
+        <div style="display:flex;gap:8px">
+          <a href="https://linkedin.com" target="_blank" style="width:32px;height:32px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--text-muted)"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="https://github.com" target="_blank" style="width:32px;height:32px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--text-muted)"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+          </a>
+          <a href="mailto:teodorina.business@gmail.com" style="width:32px;height:32px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;text-decoration:none;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <span class="material-symbols-outlined" style="font-size:14px;color:var(--text-muted)">mail</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text);margin-bottom:16px">Legal</h4>
+        <a href="#" style="display:block;font-size:13px;color:var(--text-muted);text-decoration:none;margin-bottom:10px" data-i18n="privacy">Privacy Policy</a>
+        <a href="#" style="display:block;font-size:13px;color:var(--text-muted);text-decoration:none;margin-bottom:10px" data-i18n="terms">Terms of Service</a>
+        <a href="#" style="display:block;font-size:13px;color:var(--text-muted);text-decoration:none;margin-bottom:10px" data-i18n="cookies">Cookie Policy</a>
+        <a href="#" style="display:block;font-size:13px;color:var(--text-muted);text-decoration:none;margin-bottom:10px" data-i18n="gdpr">GDPR</a>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div style="border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <span style="font-size:12px;color:var(--text-muted)" data-i18n="copyright">© 2026 AnnotateAI. All rights reserved.</span>
+      <span style="font-size:12px;color:var(--text-muted)" data-i18n="built-with">Built with YOLO · Flask · MongoDB · Docker</span>
+    </div>
+  </div>
+</footer>
+
+<nav class="bottom-nav glass" id="shared-bottom-nav"></nav>
+
+<style>
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+* { box-sizing: border-box; }
+img { max-width: 100%; }
+@media(max-width:768px){
+  h1 { font-size: clamp(32px,10vw,56px) !important; }
+  section { padding: 60px 16px !important; }
+  .fade-up { animation-delay: 0s !important; }
+}
+</style>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AnnotateAI — Bulk Upload</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/theme.css"/>
+<script src="/static/nav.js"></script>
+  <!-- Google Translate -->
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <style>
+    .goog-te-banner-frame, .skiptranslate { display:none !important; }
+    body { top:0 !important; }
+    .goog-tooltip { display:none !important; }
+    .goog-tooltip:hover { display:none !important; }
+    .goog-text-highlight { background:none !important; box-shadow:none !important; }
+  </style>
+</head>
+<body style="background:var(--bg)">
+  <div id="gt-hidden" style="display:none"></div>
+<header class="nav-bar glass" id="shared-nav"></header>
+<main style="max-width:800px;margin:0 auto;padding:80px 24px 40px">
+  <div style="margin-bottom:32px">
+    <h1 style="font-size:32px;font-weight:700;letter-spacing:-0.02em;color:var(--text)">Bulk Upload</h1>
+    <p style="font-size:15px;color:var(--text-muted);margin-top:6px">Process multiple images at once with automatic AI labeling</p>
+  </div>
+  <div class="glass" style="border-radius:20px;padding:32px;margin-bottom:20px">
+    <div style="border:2px dashed var(--border);border-radius:16px;padding:48px 24px;text-align:center;cursor:pointer;transition:all 0.2s"
+      onclick="document.getElementById('bulk-input').click()"
+      ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+      ondragleave="this.style.borderColor='var(--border)'"
+      ondrop="handleBulkDrop(event)">
+      <span class="material-symbols-outlined" style="font-size:48px;color:var(--text-muted);display:block;margin-bottom:12px;opacity:0.4">folder_open</span>
+      <p style="font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px">Select multiple images</p>
+      <p style="font-size:13px;color:var(--text-muted)">Hold Ctrl/Cmd to select multiple · JPG, PNG, WEBP</p>
+    </div>
+    <input type="file" id="bulk-input" accept="image/*" multiple style="display:none" onchange="handleBulkSelect(event)"/>
+    <div id="bulk-queue" style="margin-top:20px"></div>
+    <button id="process-btn" onclick="processBulk()" class="btn-primary" style="display:none;width:100%;margin-top:16px;padding:14px;font-size:15px">
+      Process All
+    </button>
+  </div>
+  <div id="bulk-results" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px"></div>
+</main>
+<nav class="bottom-nav glass" id="shared-bottom-nav"></nav>
+<script>
+const token = localStorage.getItem('token');
+let bulkFiles = [];
+
+function handleBulkSelect(e) { bulkFiles = Array.from(e.target.files); renderQueue(); }
+function handleBulkDrop(e) {
+  e.preventDefault();
+  bulkFiles = Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
+  renderQueue();
+}
+
+function renderQueue() {
+  document.getElementById('process-btn').style.display = bulkFiles.length ? 'block' : 'none';
+  document.getElementById('bulk-queue').innerHTML = bulkFiles.map((f,i) => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <span class="material-symbols-outlined" style="font-size:18px;color:var(--accent)">image</span>
+      <span style="flex:1;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>
+      <span id="bulk-item-${i}" style="font-size:12px;color:var(--text-muted)">Pending</span>
+    </div>`).join('');
+}
+
+async function processBulk() {
+  const btn = document.getElementById('process-btn');
+  btn.disabled = true; btn.textContent = 'Processing...';
+  const results = [];
+  for (let i = 0; i < bulkFiles.length; i++) {
+    const el = document.getElementById('bulk-item-'+i);
+    if (el) el.textContent = '⏳';
+    const url = URL.createObjectURL(bulkFiles[i]);
+    const headers = {'Content-Type':'application/json'};
+    if (token) headers['Authorization'] = 'Bearer '+token;
+    try {
+      const res = await fetch('/detect',{method:'POST',headers,body:JSON.stringify({image_url:url})});
+      const data = await res.json();
+      if (el) el.innerHTML = '<span style="color:#34C759">✓ Done</span>';
+      results.push({url,labels:data.labels||[],name:bulkFiles[i].name});
+    } catch { if (el) el.innerHTML = '<span style="color:#FF3B30">✗ Failed</span>'; }
+  }
+  document.getElementById('bulk-results').innerHTML = results.map(r=>`
+    <div class="glass card-hover" style="border-radius:14px;overflow:hidden">
+      <img src="${r.url}" style="width:100%;aspect-ratio:1;object-fit:cover"/>
+      <div style="padding:10px">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name}</div>
+        <div>${r.labels.slice(0,3).map(l=>`<span style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;background:rgba(0,102,204,0.1);color:var(--accent)">${l}</span>`).join(' ')}</div>
+      </div>
+    </div>`).join('');
+  btn.disabled = false; btn.textContent = '✓ Done!';
+}
+</script>
+</body>
+</html>

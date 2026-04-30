@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AnnotateAI — Detect</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/theme.css"/>
+<script src="/static/nav.js"></script>
+  <!-- Google Translate -->
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <style>
+    .goog-te-banner-frame, .skiptranslate { display:none !important; }
+    body { top:0 !important; }
+    .goog-tooltip { display:none !important; }
+    .goog-tooltip:hover { display:none !important; }
+    .goog-text-highlight { background:none !important; box-shadow:none !important; }
+  </style>
+</head>
+<body style="background:var(--bg)">
+  <div id="gt-hidden" style="display:none"></div>
+<header class="nav-bar glass" id="shared-nav"></header>
+
+<main style="max-width:900px;margin:0 auto;padding:80px 24px 40px">
+
+  <div style="margin-bottom:32px">
+    <a href="/home" style="font-size:13px;color:var(--text-muted);text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-bottom:16px">
+      <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span> Back
+    </a>
+    <h1 style="font-size:32px;font-weight:700;letter-spacing:-0.02em;color:var(--text)" data-i18n="detect-title">Object Detection</h1>
+    <p style="font-size:15px;color:var(--text-muted);margin-top:6px" data-i18n="detect-sub">AI will identify and label every object in your image</p>
+  </div>
+
+  <div id="detect-status" style="display:none;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:500;margin-bottom:20px"></div>
+
+  <!-- Image preview + result -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px" id="result-grid" class="result-hidden">
+    <div class="glass" style="border-radius:20px;overflow:hidden;aspect-ratio:4/3;position:relative">
+      <img id="result-img" style="width:100%;height:100%;object-fit:cover;display:none"/>
+      <div id="img-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text-muted)">
+        <span class="material-symbols-outlined" style="font-size:48px;opacity:0.3">image</span>
+      </div>
+    </div>
+    <div class="glass" style="border-radius:20px;padding:24px">
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:16px">Detected Labels</p>
+      <div id="labels-wrap" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px"></div>
+      <div id="confidence-wrap"></div>
+      <div id="annotation-wrap" style="display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Is the detection wrong?</p>
+        <div style="display:flex;gap:8px">
+          <button onclick="approveDetection()" class="btn-primary" style="flex:1;padding:10px;font-size:13px">✓ Approve</button>
+          <button onclick="openEdit()" class="btn-ghost" style="flex:1;padding:10px;font-size:13px">✏ Edit</button>
+          <button onclick="skipAnnotation()" class="btn-ghost" style="flex:1;padding:10px;font-size:13px">⏭ Skip</button>
+        </div>
+      </div>
+      <!-- Similar images -->
+      <div id="similar-wrap" style="display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:12px">Similar in History</p>
+        <div id="similar-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input card -->
+  <div class="glass" style="border-radius:20px;padding:24px;margin-bottom:20px">
+    <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:16px">Image Source</p>
+    <div style="border:2px dashed var(--border);border-radius:14px;padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:16px" id="drop-zone"
+      onclick="document.getElementById('file-input').click()"
+      ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+      ondragleave="this.style.borderColor='var(--border)'"
+      ondrop="handleDrop(event)">
+      <span class="material-symbols-outlined" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:8px">upload_file</span>
+      <p style="font-size:14px;color:var(--text-muted)">Click to upload or drag & drop</p>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:4px">JPG, PNG, WEBP</p>
+    </div>
+    <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(event)"/>
+    <div style="text-align:center;color:var(--text-muted);font-size:12px;margin-bottom:12px">— or paste URL —</div>
+    <div style="display:flex;gap:10px">
+      <input id="url-input" type="text" placeholder="https://example.com/image.jpg" style="flex:1;padding:12px 16px;border-radius:12px;font-size:14px;font-family:inherit;outline:none;border:1px solid var(--border);transition:border-color 0.2s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+      <button onclick="runDetect()" id="detect-btn" class="btn-primary" style="padding:12px 24px;font-size:14px">
+        <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle">search</span> Detect
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<!-- Edit Modal -->
+<div id="edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center">
+  <div class="glass" style="border-radius:20px;padding:32px;width:90%;max-width:440px">
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text)">Edit Labels</h3>
+    <input id="edit-input" type="text" placeholder="person, car, dog..." style="width:100%;padding:12px 16px;border-radius:12px;font-size:14px;font-family:inherit;outline:none;border:1px solid var(--border);margin-bottom:16px"/>
+    <div style="display:flex;gap:10px">
+      <button onclick="saveEdit()" class="btn-primary" style="flex:1">Save</button>
+      <button onclick="closeEdit()" class="btn-ghost" style="flex:1">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav glass" id="shared-bottom-nav"></nav>
+
+<script>
+const token = localStorage.getItem('token');
+let lastLabels = [];
+let currentUrl = '';
+
+// Load from home page if URL was passed
+window.addEventListener('DOMContentLoaded', () => {
+  const url = localStorage.getItem('detect_url');
+  if (url) {
+    localStorage.removeItem('detect_url');
+    document.getElementById('url-input').value = url;
+    runDetect();
+  }
+});
+
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  currentUrl = URL.createObjectURL(file);
+  document.getElementById('url-input').value = currentUrl;
+  showPreview(currentUrl);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').style.borderColor = 'var(--border)';
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    currentUrl = URL.createObjectURL(file);
+    document.getElementById('url-input').value = currentUrl;
+    showPreview(currentUrl);
+  }
+}
+
+function showPreview(url) {
+  const img = document.getElementById('result-img');
+  img.src = url;
+  img.style.display = 'block';
+  document.getElementById('img-placeholder').style.display = 'none';
+}
+
+async function runDetect() {
+  const url = document.getElementById('url-input').value.trim();
+  if (!url) return;
+  currentUrl = url;
+
+  const btn = document.getElementById('detect-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;animation:spin 1s linear infinite">autorenew</span> Detecting...';
+
+  showStatus('Analyzing image...', 'info');
+
+  const headers = {'Content-Type':'application/json'};
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+
+  try {
+    const res = await fetch('/detect', {
+      method:'POST', headers,
+      body: JSON.stringify({image_url: url})
+    });
+    const data = await res.json();
+    lastLabels = data.labels || [];
+
+    showPreview(url);
+    renderLabels(lastLabels, data.detections);
+    document.getElementById('annotation-wrap').style.display = 'block';
+    loadSimilar(lastLabels);
+
+    const saved = data.saved !== false && token;
+    showStatus(lastLabels.length + ' objects detected' + (saved ? ' · Saved' : ' · Guest mode'), 'success');
+  } catch(e) {
+    showStatus('Detection failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle">search</span> Detect';
+  }
+}
+
+function renderLabels(labels, detections) {
+  // Show unique labels as tags
+  const unique = [...new Set(labels)];
+  document.getElementById('labels-wrap').innerHTML = unique.map(l =>
+    `<span style="padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(0,102,204,0.1);color:var(--accent);border:1px solid rgba(0,102,204,0.2)">${l}</span>`
+  ).join('');
+
+  // Show each detection with confidence bar
+  if (detections && detections.length) {
+    document.getElementById('confidence-wrap').innerHTML = detections.map(d =>
+      `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:13px;color:var(--text);min-width:90px;font-weight:500">${d.label}</span>
+        <div style="flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+          <div style="height:100%;background:var(--accent);border-radius:3px;width:${d.confidence}%;transition:width 0.6s ease"></div>
+        </div>
+        <span style="font-size:12px;color:var(--accent);font-weight:600;min-width:40px;text-align:right">${d.confidence}%</span>
+      </div>`
+    ).join('');
+  }
+}
+
+async function loadSimilar(labels) {
+  if (!token || !labels.length) return;
+  try {
+    const res = await fetch('/images', {headers:{'Authorization':'Bearer '+token}});
+    const data = await res.json();
+    const similar = (data.images||[]).filter(img =>
+      img.labels && img.labels.some(l => labels.includes(l)) && img.image_url !== currentUrl
+    ).slice(0,3);
+    if (!similar.length) return;
+    document.getElementById('similar-wrap').style.display = 'block';
+    document.getElementById('similar-grid').innerHTML = similar.map(img =>
+      `<img src="${img.image_url}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;cursor:pointer" onclick="document.getElementById('url-input').value='${img.image_url}';runDetect()" onerror="this.style.display='none'"/>`
+    ).join('');
+  } catch(e) {}
+}
+
+function showStatus(msg, type) {
+  const el = document.getElementById('detect-status');
+  el.style.display = 'block';
+  el.style.background = type==='success'?'rgba(52,199,89,0.1)':type==='error'?'rgba(255,59,48,0.1)':'rgba(0,102,204,0.1)';
+  el.style.color = type==='success'?'#34C759':type==='error'?'#FF3B30':'var(--accent)';
+  el.style.border = `1px solid ${type==='success'?'rgba(52,199,89,0.2)':type==='error'?'rgba(255,59,48,0.2)':'rgba(0,102,204,0.2)'}`;
+  el.textContent = msg;
+}
+
+async function approveDetection() {
+  showStatus('Saving approval...', 'info');
+  
+  if (token && lastLabels.length) {
+    try {
+      const res = await fetch('/detect', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body: JSON.stringify({image_url: currentUrl, status: 'approved'})
+      });
+      const data = await res.json();
+      if (data.saved) {
+        showStatus('✅ Detection approved and saved to your history!', 'success');
+        document.getElementById('annotation-wrap').style.display = 'none';
+        setTimeout(() => { window.location.href = '/history-page'; }, 2000);
+      } else {
+        showStatus('✅ Detection approved! Sign in to save to history.', 'success');
+      }
+    } catch(e) {
+      showStatus('✅ Approved locally. Could not save to server.', 'success');
+    }
+  } else {
+    showStatus('✅ Detection approved! Sign in to save to history.', 'success');
+    setTimeout(() => { window.location.href = '/history-page'; }, 2000);
+  }
+}
+function skipAnnotation() { showStatus('Skipped.', 'info'); document.getElementById('annotation-wrap').style.display = 'none'; }
+function openEdit() {
+  document.getElementById('edit-input').value = lastLabels.join(', ');
+  document.getElementById('edit-modal').style.display = 'flex';
+}
+function closeEdit() { document.getElementById('edit-modal').style.display = 'none'; }
+function saveEdit() {
+  lastLabels = document.getElementById('edit-input').value.split(',').map(s=>s.trim()).filter(Boolean);
+  renderLabels(lastLabels);
+  showStatus('Labels updated!', 'success');
+  closeEdit();
+}
+</script>
+<style>
+@keyframes spin { to { transform:rotate(360deg); } }
+@media(max-width:768px) { #result-grid { grid-template-columns:1fr !important; } }
+</style>
+</body>
+</html>

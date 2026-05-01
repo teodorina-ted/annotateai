@@ -8,7 +8,16 @@ def create_app():
     app.url_map.strict_slashes = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "change-this-in-production")
     JWTManager(app)
-    CORS(app)
+
+    # Explicit CORS - allow all origins, methods, headers
+    CORS(
+        app,
+        resources={r"/*": {"origins": "*"}},
+        supports_credentials=False,
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization"],
+    )
+
     from app.routes import main
     from app.routes.auth import auth
     from app.routes.detect import detect_bp
@@ -17,4 +26,5 @@ def create_app():
     app.register_blueprint(auth)
     app.register_blueprint(detect_bp)
     app.register_blueprint(images_bp)
+
     return app

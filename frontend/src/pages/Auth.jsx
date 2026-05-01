@@ -66,6 +66,9 @@ export default function Auth() {
           <form onSubmit={handleSubmit}>
             <label style={lbl}>Username</label>
             <input className="input" type="text" required value={username} onChange={e => setUsername(e.target.value)} placeholder="your_username" style={{ marginBottom: 16 }} />
+            {mode === "register" && (
+              <input className="input" type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" style={{ marginBottom: 16 }} />
+            )}
 
             <label style={lbl}>Password</label>
             <input className="input" type="password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{ marginBottom: 16 }} />

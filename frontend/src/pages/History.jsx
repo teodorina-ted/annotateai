@@ -97,7 +97,6 @@ export default function History() {
       const txt = data.map(i => `${new Date(i.date).toLocaleString()} | ${i.status || "pending"} | ${(i.labels || []).join(", ")}`).join("\n");
       downloadFile(txt, "annotateai_history.txt", "text/plain");
     } else if (format === "zip") {
-      // Download images as zip using JSZip CDN
       if (!window.JSZip) {
         await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js");
       }
@@ -105,24 +104,53 @@ export default function History() {
       let count = 0;
       for (const img of data) {
         try {
+          // Determine YOLO category folder
+          const cats = (img.detections || []).map(d => d.category).filter(Boolean);
+          const mainCat = cats[0] || "other";
+
+          // Determine Gemini subcategory folder
+          let subCat = "uncategorized";
+          if (img.metadata && img.metadata.objects && img.metadata.objects.length > 0) {
+            const firstObj = img.metadata.objects[0];
+            subCat = firstObj.subcategory || firstObj.category || firstObj.label || "uncategorized";
+          } else if (img.labels && img.labels.length > 0) {
+            subCat = img.labels[0];
+          }
+
+          // Sanitize folder names
+          const safeMain = mainCat.replace(/[^a-z0-9_-]/gi, "_").toLowerCase();
+          const safeSub = subCat.replace(/[^a-z0-9_-]/gi, "_").toLowerCase();
+          const folder = `${safeMain}/${safeSub}`;
+
+          // Save image
           let blob;
+          let ext = "jpg";
           if (img.image_url.startsWith("data:")) {
             const base64 = img.image_url.split(",")[1];
-            const ext = img.image_url.includes("png") ? "png" : "jpg";
+            ext = img.image_url.includes("png") ? "png" : "jpg";
             blob = base64ToBlob(base64, "image/" + ext);
-            zip.file(`img_${count + 1}_${img._id.slice(-6)}.${ext}`, blob);
           } else {
             const res = await fetch(img.image_url);
             blob = await res.blob();
-            zip.file(`img_${count + 1}_${img._id.slice(-6)}.jpg`, blob);
           }
-          // Add labels file alongside each image
-          zip.file(`img_${count + 1}_${img._id.slice(-6)}.txt`, (img.labels || []).join("\n"));
+          const filename = `img_${count + 1}_${img._id.slice(-6)}`;
+          zip.file(`${folder}/${filename}.${ext}`, blob);
+
+          // Save metadata as JSON next to image
+          const meta = {
+            id: img._id,
+            labels: img.labels,
+            detections: img.detections,
+            ai_insights: img.metadata,
+            status: img.status,
+            date: img.date,
+          };
+          zip.file(`${folder}/${filename}.json`, JSON.stringify(meta, null, 2));
           count++;
-        } catch (e) { console.warn("Skipped image:", e); }
+        } catch (e) { console.warn("Skipped:", e); }
       }
       const blob = await zip.generateAsync({ type: "blob" });
-      downloadFile(blob, "annotateai_images.zip", "application/zip");
+      downloadFile(blob, "annotateai_dataset.zip", "application/zip");
     }
   }
 

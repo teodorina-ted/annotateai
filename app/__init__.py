@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -5,7 +6,7 @@ from flask_cors import CORS
 def create_app():
     app = Flask(__name__)
     app.url_map.strict_slashes = False
-    app.config["JWT_SECRET_KEY"] = "change-this-in-production"
+    app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "change-this-in-production")
     JWTManager(app)
     CORS(app)
     from app.routes import main

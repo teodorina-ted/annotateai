@@ -104,23 +104,28 @@ export default function History() {
       let count = 0;
       for (const img of data) {
         try {
-          // Determine YOLO category folder
+          // Determine YOLO category + label folders
           const cats = (img.detections || []).map(d => d.category).filter(Boolean);
           const mainCat = cats[0] || "other";
+          const mainLabel = (img.labels && img.labels[0]) || "unlabeled";
 
-          // Determine Gemini subcategory folder
-          let subCat = "uncategorized";
+          // Build rich filename from Gemini details
+          let detailParts = [];
           if (img.metadata && img.metadata.objects && img.metadata.objects.length > 0) {
             const firstObj = img.metadata.objects[0];
-            subCat = firstObj.subcategory || firstObj.category || firstObj.label || "uncategorized";
-          } else if (img.labels && img.labels.length > 0) {
-            subCat = img.labels[0];
+            const d = firstObj.details || {};
+            // Pull useful descriptors
+            ["breed", "species", "brand", "model", "type", "gender", "age_group", "color"].forEach(k => {
+              if (d[k]) detailParts.push(String(d[k]));
+            });
+            if (firstObj.subcategory) detailParts.push(firstObj.subcategory);
           }
 
-          // Sanitize folder names
-          const safeMain = mainCat.replace(/[^a-z0-9_-]/gi, "_").toLowerCase();
-          const safeSub = subCat.replace(/[^a-z0-9_-]/gi, "_").toLowerCase();
-          const folder = `${safeMain}/${safeSub}`;
+          // Sanitize
+          const sanitize = (s) => s.replace(/[^a-z0-9_-]/gi, "_").toLowerCase();
+          const safeMain = sanitize(mainCat);
+          const safeLabel = sanitize(mainLabel);
+          const safeDetails = detailParts.map(sanitize).filter(Boolean).join("_");
 
           // Save image
           let blob;
@@ -133,7 +138,12 @@ export default function History() {
             const res = await fetch(img.image_url);
             blob = await res.blob();
           }
-          const filename = `img_${count + 1}_${img._id.slice(-6)}`;
+
+          const idShort = img._id.slice(-6);
+          const filename = safeDetails
+            ? `${safeDetails}_${idShort}`
+            : `img_${count + 1}_${idShort}`;
+          const folder = `${safeMain}/${safeLabel}`;
           zip.file(`${folder}/${filename}.${ext}`, blob);
 
           // Save metadata as JSON next to image

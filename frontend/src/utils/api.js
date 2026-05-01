@@ -16,11 +16,11 @@ export async function login(username, password) {
   return res.json();
 }
 
-export async function register(username, password, role = "user") {
+export async function register(username, password, email = "", role = "user") {
   const res = await fetch(API + "/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password, role }),
+    body: JSON.stringify({ username, email, password, role }),
   });
   if (!res.ok) throw new Error((await res.json()).error || "Register failed");
   return res.json();

@@ -7,6 +7,7 @@ export default function Auth() {
   const navigate = useNavigate();
   const [mode, setMode] = useState("login");
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
   const [error, setError] = useState("");
@@ -24,7 +25,7 @@ export default function Auth() {
         localStorage.setItem("role", data.role);
         navigate("/home");
       } else {
-        await register(username, password, role);
+        await register(username, password, email, role);
         const data = await login(username, password);
         localStorage.setItem("token", data.token);
         localStorage.setItem("username", username);

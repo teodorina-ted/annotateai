@@ -96,7 +96,7 @@ export default function Import() {
       let success = 0;
       for (let i = 0; i < urls.length; i++) {
         try {
-          await fetch("http://localhost:5000/detect", {
+          await fetch("https://annotateai.onrender.com/detect", {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
             body: JSON.stringify({ image_url: urls[i] }),

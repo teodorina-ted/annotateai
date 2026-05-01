@@ -1,4 +1,4 @@
-const API = "http://localhost:5000";
+const API = process.env.REACT_APP_API_URL || "https://annotateai.onrender.com";
 
 function getToken() { return localStorage.getItem("token"); }
 function authHeaders() {

@@ -131,7 +131,7 @@ export default function Detect() {
     }
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/images/${docId}`, {
+      const res = await fetch(`https://annotateai.onrender.com/images/${docId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
         body: JSON.stringify(body),
@@ -181,7 +181,7 @@ export default function Detect() {
     if (!docId) { afterAction("Discarded"); return; }
     try {
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:5000/images/${docId}`, {
+      await fetch(`https://annotateai.onrender.com/images/${docId}`, {
         method: "DELETE",
         headers: { Authorization: "Bearer " + token },
       });

@@ -4,6 +4,7 @@ import Layout from "../components/Layout";
 import { getImages, getUsername, isLoggedIn } from "../utils/api";
 import { setPendingImage, setPendingBulk } from "../utils/store";
 import { showToast, showConfirm } from "../components/Toast";
+const API = process.env.REACT_APP_API_URL || "https://annotateai.onrender.com";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ export default function Home() {
       try {
         const base64 = await fileToBase64(files[i]);
         const token = localStorage.getItem("token");
-        await fetch("https://annotateai.onrender.com/detect", {
+        await fetch(`${API}/detect`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
           body: JSON.stringify({ image_url: base64 }),

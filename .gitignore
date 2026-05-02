@@ -20,3 +20,4 @@ users.db
 *.swp
 .vscode/
 .idea/
+*.webp

@@ -5,6 +5,8 @@ import { getImages, isLoggedIn, deleteImage, bulkDelete } from "../utils/api";
 import { setPendingImage } from "../utils/store";
 import { showToast, showConfirm } from "../components/Toast";
 
+
+
 export default function History() {
   const navigate = useNavigate();
   const [allImages, setAllImages] = useState([]);
@@ -22,7 +24,7 @@ export default function History() {
   useEffect(() => { load(); }, []);
 
   function load() {
-    if (!isLoggedIn()) { setLoading(false); return; }
+    if (!isLoggedIn()) { setAllImages(JSON.parse(sessionStorage.getItem("guestImages") || "[]")); setLoading(false); return; }
     setLoading(true);
     getImages()
       .then(d => setAllImages((d.images || []).reverse()))
@@ -30,9 +32,7 @@ export default function History() {
       .finally(() => setLoading(false));
   }
 
-  if (!isLoggedIn()) {
-    return <Layout><p style={{ color: "var(--text-muted)", textAlign: "center", padding: 40 }}>Please sign in to see your history.</p></Layout>;
-  }
+  // Guest sees demo data (loaded in useEffect above)
 
   const labels = [...new Set(allImages.flatMap(i => i.labels || []))];
   const categories = [...new Set(allImages.flatMap(i => (i.detections || []).map(d => d.category).filter(Boolean)))];

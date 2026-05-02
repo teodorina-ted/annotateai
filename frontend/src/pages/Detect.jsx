@@ -4,6 +4,8 @@ import Layout from "../components/Layout";
 import { detect, isLoggedIn, getPendingImages } from "../utils/api";
 import { getPendingImage, getPendingBulk } from "../utils/store";
 
+const API = process.env.REACT_APP_API_URL || "https://annotateai.onrender.com";
+
 export default function Detect() {
   const navigate = useNavigate();
   const [imageUrl, setImageUrl] = useState("");
@@ -116,7 +118,16 @@ export default function Detect() {
       setDocId(data.id || null);
       const saved = data.saved && isLoggedIn();
       setShowActions(true);
-      showStatus(`${(data.labels || []).length} objects detected${saved ? " - Review and approve" : " - Guest mode (not saved)"}`, "success");
+      if (!isLoggedIn()) {
+        const guestImages = JSON.parse(sessionStorage.getItem("guestImages") || "[]");
+        if (guestImages.length >= 3) {
+          showStatus("Guest limit: 3 images max. Sign in for unlimited!", "info");
+        } else {
+          guestImages.push({ _id: "g" + Date.now(), image_url: imageUrl, labels: data.labels || [], detections: data.detections || [], status: "pending", date: new Date().toISOString() });
+          sessionStorage.setItem("guestImages", JSON.stringify(guestImages));
+        }
+      }
+      showStatus(`${(data.labels || []).length} objects detected${saved ? " - Review and approve" : " - Guest mode (max 3 images)"}`, "success");
     } catch (e) {
       showStatus("Detection failed: " + e.message, "error");
     } finally {
@@ -125,13 +136,16 @@ export default function Detect() {
   }
 
   async function callUpdate(body) {
-    if (!docId || !isLoggedIn()) {
-      showStatus("Sign in to save your review!", "error");
-      return false;
+    if (!isLoggedIn()) {
+      showStatus("Guest mode: action noted but not saved. Sign in to keep your work!", "info");
+      return true;
+    }
+    if (!docId) {
+      return true;
     }
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`https://annotateai.onrender.com/images/${docId}`, {
+      const res = await fetch(`${API}/images/${docId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
         body: JSON.stringify(body),
@@ -181,7 +195,7 @@ export default function Detect() {
     if (!docId) { afterAction("Discarded"); return; }
     try {
       const token = localStorage.getItem("token");
-      await fetch(`https://annotateai.onrender.com/images/${docId}`, {
+      await fetch(`${API}/images/${docId}`, {
         method: "DELETE",
         headers: { Authorization: "Bearer " + token },
       });

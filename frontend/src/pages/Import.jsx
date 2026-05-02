@@ -4,6 +4,7 @@ import Layout from "../components/Layout";
 import { setPendingImage } from "../utils/store";
 import { isLoggedIn } from "../utils/api";
 import { showToast } from "../components/Toast";
+const API = process.env.REACT_APP_API_URL || "https://annotateai.onrender.com";
 
 export default function Import() {
   const navigate = useNavigate();
@@ -96,7 +97,7 @@ export default function Import() {
       let success = 0;
       for (let i = 0; i < urls.length; i++) {
         try {
-          await fetch("https://annotateai.onrender.com/detect", {
+          await fetch(`${API}/detect`, {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
             body: JSON.stringify({ image_url: urls[i] }),

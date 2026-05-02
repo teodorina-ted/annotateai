@@ -129,7 +129,7 @@ def detect():
         else:
             extracted = extract_image_from_page(image_url)
             if extracted == image_url and not any(image_url.lower().endswith(e) for e in ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif']):
-                return jsonify({"error": "This webpage does not have an extractable image. Try right-click on the image -> Copy image address, then paste that URL."}), 400
+                return jsonify({"error": "Could not extract image from this webpage. Please use a direct image URL (right-click image → Copy image address). Example: https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg"}), 400
             source = extracted
             image_url = extracted
 

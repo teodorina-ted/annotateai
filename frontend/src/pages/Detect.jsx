@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
-import { detect, isLoggedIn, getPendingImages } from "../utils/api";
+import { detect, isLoggedIn, getPendingImages, getImages } from "../utils/api";
 import { getPendingImage, getPendingBulk } from "../utils/store";
 
 const API = process.env.REACT_APP_API_URL || "https://annotateai.onrender.com";
@@ -53,9 +53,10 @@ export default function Detect() {
 
   async function loadReviewMode(startId) {
     try {
-      const pending = await getPendingImages();
+      const all = await getImages();
+      const pending = (all.images || []).reverse();
       if (!pending.length) {
-        showStatus("No pending images to review!", "info");
+        showStatus("No images to review!", "info");
         setTimeout(() => navigate("/history"), 1500);
         return;
       }
@@ -129,7 +130,7 @@ export default function Detect() {
       }
       showStatus(`${(data.labels || []).length} objects detected${saved ? " - Review and approve" : " - Guest mode (max 3 images)"}`, "success");
     } catch (e) {
-      showStatus("Detection failed: " + e.message, "error");
+      showStatus(e.message || "Detection failed", "error");
     } finally {
       setLoading(false);
     }

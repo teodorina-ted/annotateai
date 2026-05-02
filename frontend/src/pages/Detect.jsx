@@ -232,7 +232,7 @@ export default function Detect() {
           <a href="/home" style={{ fontSize: 13, color: "var(--text-muted)", display: "inline-flex", alignItems: "center", gap: 4 }}>
             <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: 16 }}>arrow_back</span> Back
           </a>
-          <button onClick={() => navigate("/history")} title="Close" style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", padding: 4 }}>
+          <button onClick={() => navigate(-1)} title="Close" style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", padding: 4 }}>
             <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: 22 }}>close</span>
           </button>
         </div>

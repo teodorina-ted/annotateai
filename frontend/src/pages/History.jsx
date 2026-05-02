@@ -326,6 +326,16 @@ export default function History() {
                     }} title="Download" style={iconBtn("var(--accent)")}>
                     <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: 16 }}>download</span>
                   </button>
+                  <button onClick={() => {
+                      const a = document.createElement("a");
+                      a.href = img.image_url;
+                      a.download = `annotateai_${img._id.slice(-6)}.${img.image_url.includes("png") ? "png" : "jpg"}`;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }} title="Download" style={iconBtn("var(--accent)")}>
+                    <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: 16 }}>download</span>
+                  </button>
                   <button onClick={() => openReview(img._id)} title="Edit" style={iconBtn("var(--success)")}>
                     <span className="material-symbols-outlined notranslate" translate="no" style={{ fontSize: 18 }}>edit</span>
                   </button>

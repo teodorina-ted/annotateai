@@ -79,12 +79,19 @@ export default function History() {
 
   async function handleBulkDelete() {
     if (selected.size === 0) return;
-    if (!window.confirm(`Delete ${selected.size} detections?`)) return;
+    if (!isLoggedIn()) {
+      const ids = [...selected];
+      const guestImages = JSON.parse(sessionStorage.getItem("guestImages") || "[]");
+      sessionStorage.setItem("guestImages", JSON.stringify(guestImages.filter(i => !ids.includes(i._id))));
+      setAllImages(prev => prev.filter(i => !ids.includes(i._id)));
+      setSelected(new Set());
+      return;
+    }
     try {
       await bulkDelete([...selected]);
       setSelected(new Set());
       load();
-    } catch (e) { alert("Bulk delete failed: " + e.message); }
+    } catch (e) { console.warn("Bulk delete failed:", e); }
   }
 
   async function exportData(format) {

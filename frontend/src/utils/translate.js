@@ -50,6 +50,8 @@ export function setLang(code) {
     document.cookie = "googtrans=" + val + "; path=/";
     document.cookie = "googtrans=" + val + "; path=/; domain=" + window.location.hostname;
   }
+  // Save flag that this is a language switch, not a navigation
+  sessionStorage.setItem("langSwitch", "true");
   window.location.reload();
 }
 

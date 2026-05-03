@@ -51,6 +51,21 @@ export default function Detect() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Restore state after language switch only
+  useEffect(() => {
+    if (sessionStorage.getItem("langSwitch") === "true") {
+      sessionStorage.removeItem("langSwitch");
+      const saved = sessionStorage.getItem("detectSnap");
+      if (saved) {
+        try {
+          const s = JSON.parse(saved);
+          if (s.imageUrl) { setImageUrl(s.imageUrl); setLabels(s.labels || []); setDetections(s.detections || []); setMetadata(s.metadata || null); setDocId(s.docId || null); setShowActions(s.showActions || false); }
+        } catch {}
+        sessionStorage.removeItem("detectSnap");
+      }
+    }
+  }, []);
+
 
   async function loadReviewMode(startId) {
     try {
@@ -81,6 +96,7 @@ export default function Detect() {
     setShowActions(true);
     setAiMode(false);
     localStorage.setItem("aiMode", "false");
+    sessionStorage.setItem("detectSnap", JSON.stringify({ imageUrl: item.image_url, labels: item.labels || [], detections: item.detections || [], metadata: item.metadata || null, docId: item._id, showActions: true }));
   }
 
   function navReview(direction) {
@@ -122,6 +138,7 @@ export default function Detect() {
       setDocId(data.id || null);
       const saved = data.saved && isLoggedIn();
       setShowActions(true);
+      sessionStorage.setItem("detectSnap", JSON.stringify({ imageUrl: data.image_url || imageUrl, labels: data.labels || [], detections: data.detections || [], metadata: data.metadata || null, docId: data.id || null, showActions: true }));
       if (!isLoggedIn()) {
         const guestImages = JSON.parse(sessionStorage.getItem("guestImages") || "[]");
         if (guestImages.length >= 3) {

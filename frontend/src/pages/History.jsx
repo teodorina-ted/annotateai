@@ -65,6 +65,12 @@ export default function History() {
   }
 
   async function handleDelete(id) {
+    if (!isLoggedIn()) {
+      const guestImages = JSON.parse(sessionStorage.getItem("guestImages") || "[]");
+      sessionStorage.setItem("guestImages", JSON.stringify(guestImages.filter(i => i._id !== id)));
+      setAllImages(prev => prev.filter(i => i._id !== id));
+      return;
+    }
     const __ok = await showConfirm({ title: "Delete this detection?", danger: true, icon: "warning" });
     if (!__ok) return;
     try { await deleteImage(id); load(); }

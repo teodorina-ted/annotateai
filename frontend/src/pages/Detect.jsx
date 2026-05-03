@@ -51,6 +51,37 @@ export default function Detect() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Save state when leaving page
+  useEffect(() => {
+    return () => {
+      const state = { imageUrl, labels, detections, metadata, docId, showActions };
+      if (imageUrl || labels.length > 0) {
+        sessionStorage.setItem("detectState", JSON.stringify(state));
+      }
+    };
+  });
+
+  // Restore state if coming back (not from fresh navigation)
+  useEffect(() => {
+    if (!imageUrl && labels.length === 0) {
+      const saved = sessionStorage.getItem("detectState");
+      if (saved && !getPendingImage()) {
+        try {
+          const s = JSON.parse(saved);
+          if (s.imageUrl) {
+            setImageUrl(s.imageUrl);
+            setLabels(s.labels || []);
+            setDetections(s.detections || []);
+            setMetadata(s.metadata || null);
+            setDocId(s.docId || null);
+            setShowActions(s.showActions || false);
+          }
+        } catch {}
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function loadReviewMode(startId) {
     try {
       const all = await getImages();

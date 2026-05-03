@@ -298,18 +298,25 @@ export default function Detect() {
                   ))}
                 </div>
 
-                {detections.map((d, i) => (
+                {Object.values(detections.reduce((acc, d) => {
+                  if (!acc[d.label]) acc[d.label] = { label: d.label, category: d.category, count: 0, maxConf: 0, avgConf: 0, total: 0 };
+                  acc[d.label].count++;
+                  acc[d.label].total += d.confidence;
+                  acc[d.label].avgConf = Math.round(acc[d.label].total / acc[d.label].count * 10) / 10;
+                  if (d.confidence > acc[d.label].maxConf) acc[d.label].maxConf = d.confidence;
+                  return acc;
+                }, {})).map((g, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                     <div style={{ display: "flex", flexDirection: "column", minWidth: 90 }}>
-                      <span style={{ fontSize: 12, fontWeight: 500 }}>{d.label}</span>
-                      {d.category && d.category !== "other" && (
-                        <span style={{ fontSize: 9, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{d.category}</span>
+                      <span style={{ fontSize: 12, fontWeight: 500 }}>{g.label}</span>
+                      {g.category && g.category !== "other" && (
+                        <span style={{ fontSize: 9, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{g.category}</span>
                       )}
                     </div>
                     <div style={{ flex: 1, height: 5, background: "var(--border)", borderRadius: 3, overflow: "hidden" }}>
-                      <div style={{ height: "100%", background: "var(--accent)", width: `${d.confidence}%`, transition: "width 0.6s" }} />
+                      <div style={{ height: "100%", background: "var(--accent)", width: `${g.maxConf}%`, transition: "width 0.6s" }} />
                     </div>
-                    <span style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, minWidth: 36, textAlign: "right" }}>{d.confidence}%</span>
+                    <span style={{ fontSize: 11, color: "var(--accent)", fontWeight: 600, minWidth: 50, textAlign: "right" }}>{g.maxConf}%</span>
                   </div>
                 ))}
               </>

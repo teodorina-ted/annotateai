@@ -132,7 +132,7 @@ def detect():
                 return jsonify({"error": "Could not extract image from this webpage. Please use a direct image URL (right-click image → Copy image address). Example: https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg"}), 400
             image_url = extracted
             # Download URL to temp file so YOLO doesn't treat it as video stream
-            import tempfile, requests as req
+            import requests as req
             try:
                 resp = req.get(extracted, headers={"User-Agent": "Mozilla/5.0"}, timeout=15)
                 tmp = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)

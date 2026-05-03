@@ -18,7 +18,7 @@ export default function Detect() {
   const [showActions, setShowActions] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState("");
-  const [aiMode, setAiMode] = useState(() => localStorage.getItem("aiMode") === "true");
+  const [aiMode, setAiMode] = useState(false);
   const [reviewQueue, setReviewQueue] = useState([]);
   const [reviewIdx, setReviewIdx] = useState(0);
 
@@ -125,7 +125,7 @@ export default function Detect() {
         if (guestImages.length >= 3) {
           showStatus("Guest limit: 3 images max. Sign in for unlimited!", "info");
         } else {
-          guestImages.push({ _id: "g" + Date.now(), image_url: imageUrl, labels: data.labels || [], detections: data.detections || [], status: "pending", date: new Date().toISOString() });
+          guestImages.push({ _id: "g" + Date.now(), image_url: data.image_url || imageUrl, labels: data.labels || [], detections: data.detections || [], status: "pending", date: new Date().toISOString() });
           sessionStorage.setItem("guestImages", JSON.stringify(guestImages));
         }
       }

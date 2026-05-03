@@ -48,7 +48,7 @@ export default function Detect() {
       setImageUrl(url);
       runDetection(url);
     } else {
-      const saved = sessionStorage.getItem("detectState");
+
       if (saved) {
         try {
           const s = JSON.parse(saved);
@@ -127,7 +127,7 @@ export default function Detect() {
     try {
       const data = await detect(url);
       if (data.image_url) setImageUrl(data.image_url);
-      sessionStorage.setItem("detectState", JSON.stringify({ imageUrl: data.image_url || imageUrl, labels: data.labels, detections: data.detections, metadata: data.metadata, docId: data.id }));
+
       setLabels(data.labels || []);
       setDetections(data.detections || []);
       setMetadata(data.metadata || null);

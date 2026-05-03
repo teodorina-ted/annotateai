@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
-from ultralytics import YOLO
 from app.models.user import images_collection
 import datetime
 import base64
@@ -10,11 +9,11 @@ import json
 import hashlib
 from bson import ObjectId
 from dotenv import load_dotenv
-import google.generativeai as genai
 
 load_dotenv()
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if GEMINI_API_KEY:
+    import google.generativeai as genai
     genai.configure(api_key=GEMINI_API_KEY)
 
 
@@ -48,7 +47,7 @@ def extract_image_from_page(url):
 
 
 detect_bp = Blueprint('detect', __name__)
-model = YOLO("yolov8n.pt")
+model = None
 
 
 # Category mapping for YOLO labels
@@ -143,6 +142,10 @@ def detect():
             except Exception as dl_err:
                 return jsonify({"error": f"Could not download image: {dl_err}"}), 400
 
+        global model
+        if model is None:
+            from ultralytics import YOLO
+            model = YOLO("yolov8n.pt")
         results = model(source, verbose=False)
         detections = []
         if len(results) == 0 or results[0].boxes is None or len(results[0].boxes) == 0:

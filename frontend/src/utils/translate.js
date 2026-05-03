@@ -50,7 +50,7 @@ export function setLang(code) {
     document.cookie = "googtrans=" + val + "; path=/";
     document.cookie = "googtrans=" + val + "; path=/; domain=" + window.location.hostname;
   }
-  window.location.href = window.location.pathname + window.location.search;
+  window.location.reload();
 }
 
 export function injectGoogleTranslate() {

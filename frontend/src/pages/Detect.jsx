@@ -51,7 +51,6 @@ export default function Detect() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  }, []);
 
   async function loadReviewMode(startId) {
     try {

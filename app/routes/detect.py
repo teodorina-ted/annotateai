@@ -128,10 +128,20 @@ def detect():
             source = tmp_path
         else:
             extracted = extract_image_from_page(image_url)
-            if extracted == image_url and not any(image_url.lower().endswith(e) for e in ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif']):
+            if extracted == image_url and not any(image_url.split('?')[0].lower().endswith(e) for e in ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif']):
                 return jsonify({"error": "Could not extract image from this webpage. Please use a direct image URL (right-click image → Copy image address). Example: https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg"}), 400
-            source = extracted
             image_url = extracted
+            # Download URL to temp file so YOLO doesn't treat it as video stream
+            import tempfile, requests as req
+            try:
+                resp = req.get(extracted, headers={"User-Agent": "Mozilla/5.0"}, timeout=15)
+                tmp = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)
+                tmp.write(resp.content)
+                tmp.close()
+                tmp_path = tmp.name
+                source = tmp_path
+            except Exception as dl_err:
+                return jsonify({"error": f"Could not download image: {dl_err}"}), 400
 
         results = model(source, verbose=False)
         detections = []
@@ -201,7 +211,8 @@ def detect():
             "detections": detections,
             "metadata": gemini_meta,
             "saved": saved,
-            "id": doc_id
+            "id": doc_id,
+            "image_url": image_url
         })
 
     except Exception as e:

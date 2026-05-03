@@ -113,6 +113,7 @@ export default function Detect() {
     showStatus("Analyzing image with YOLO + Gemini...", "info");
     try {
       const data = await detect(url);
+      if (data.image_url) setImageUrl(data.image_url);
       setLabels(data.labels || []);
       setDetections(data.detections || []);
       setMetadata(data.metadata || null);

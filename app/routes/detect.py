@@ -175,38 +175,6 @@ def detect():
 
         saved = False
         doc_id = None
-        try:
-            verify_jwt_in_request()
-            username = get_jwt_identity()
-            img_hash = hashlib.sha256(image_url.encode()).hexdigest()[:16]
-            existing = images_collection.find_one({"username": username, "image_hash": img_hash})
-            if existing:
-                images_collection.update_one(
-                    {"_id": existing["_id"]},
-                    {"$set": {
-                        "labels": labels,
-                        "detections": detections,
-                        "metadata": gemini_meta,
-                        "status": "pending",
-                        "date": datetime.datetime.utcnow()
-                    }}
-                )
-                doc_id = str(existing["_id"])
-            else:
-                result = images_collection.insert_one({
-                    "username": username,
-                    "image_url": image_url,
-                    "image_hash": img_hash,
-                    "labels": labels,
-                    "detections": detections,
-                    "metadata": gemini_meta,
-                    "status": "pending",
-                    "date": datetime.datetime.utcnow()
-                })
-                doc_id = str(result.inserted_id)
-            saved = True
-        except Exception:
-            pass
 
         return jsonify({
             "labels": labels,

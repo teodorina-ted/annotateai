@@ -126,6 +126,11 @@ export default function Detect() {
   }
 
   async function runDetection(url) {
+    setLabels([]);
+    setDetections([]);
+    setMetadata(null);
+    setDocId(null);
+    setShowActions(false);
     setLoading(true);
     showStatus("Analyzing image with YOLO + Gemini...", "info");
     try {
@@ -206,6 +211,21 @@ export default function Detect() {
   }
 
   async function handleSkip() {
+    if (!docId && isLoggedIn()) {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API}/save`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+          body: JSON.stringify({ image_url: imageUrl, labels, detections, metadata, status: "pending" }),
+        });
+        afterAction("Skipped (saved as pending)");
+        return;
+      } catch (e) {
+        showStatus("Could not save: " + e.message, "error");
+        return;
+      }
+    }
     const ok = await callUpdate({ status: "pending", labels });
     if (ok) afterAction("Skipped");
   }

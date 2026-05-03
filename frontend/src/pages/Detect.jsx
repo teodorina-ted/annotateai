@@ -47,19 +47,6 @@ export default function Detect() {
     if (url) {
       setImageUrl(url);
       runDetection(url);
-    } else {
-
-      if (saved) {
-        try {
-          const s = JSON.parse(saved);
-          setImageUrl(s.imageUrl || "");
-          setLabels(s.labels || []);
-          setDetections(s.detections || []);
-          setMetadata(s.metadata || null);
-          setDocId(s.docId || null);
-          setShowActions(true);
-        } catch {}
-      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

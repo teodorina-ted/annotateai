@@ -145,6 +145,8 @@ def detect():
 
         results = model(source, verbose=False)
         detections = []
+        if len(results) == 0 or results[0].boxes is None or len(results[0].boxes) == 0:
+            return jsonify({"labels": [], "detections": [], "metadata": {}, "saved": False, "id": None, "image_url": image_url})
         for box in results[0].boxes:
             label = model.names[int(box.cls[0])]
             conf = float(box.conf[0])
